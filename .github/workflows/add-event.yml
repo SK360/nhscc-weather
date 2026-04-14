@@ -1,0 +1,65 @@
+name: Add Event
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Single event or batch?'
+        required: true
+        type: choice
+        options:
+          - single
+          - batch
+        default: single
+      date:
+        description: 'Event date (YYYY-MM-DD) — for single mode'
+        required: false
+      name:
+        description: 'Event name — for single mode'
+        required: false
+      drivers:
+        description: 'Driver count — for single mode'
+        required: false
+      batch:
+        description: 'Batch input (date,name,drivers per line) — for batch mode'
+        required: false
+
+jobs:
+  add-event:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Add event(s)
+        run: |
+          if [ "${{ inputs.mode }}" = "single" ]; then
+            python scripts/add_events.py \
+              --date "${{ inputs.date }}" \
+              --name "${{ inputs.name }}" \
+              --drivers "${{ inputs.drivers }}"
+          else
+            python scripts/add_events.py \
+              --batch "${{ inputs.batch }}"
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/nhscc_events_weather.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            COUNT=$(git diff --cached --stat | grep 'insertion' | grep -oP '\d+ insertion' | grep -oP '\d+' || echo "0")
+            git commit -m "Add event(s) via GitHub Actions
+
+          Weather data fetched from Open-Meteo ERA5 for North Park, Gibsonia PA"
+            git push
+          fi
