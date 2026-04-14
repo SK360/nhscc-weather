@@ -56,6 +56,7 @@ tr:hover td{background:#1e293b}
     <button class="tab"    onclick="show('ov',this)">Overview</button>
     <button class="tab"    onclick="show('tmp',this)">Temperature</button>
     <button class="tab"    onclick="show('sc',this)">Scatter</button>
+    <button class="tab"    onclick="show('yr',this)">Seasons</button>
     <button class="tab"    onclick="show('ev',this)">All Events</button>
   </div>
 </div>
@@ -151,6 +152,12 @@ tr:hover td{background:#1e293b}
         <div class="card"><div class="ct">High Temp vs Attendance &nbsp;<span id="sr1" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c5"></canvas></div></div>
         <div class="card"><div class="ct">Precipitation vs Attendance &nbsp;<span id="sr2" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c6"></canvas></div></div>
       </div>
+    </div>
+
+    <div id="p-yr" class="pn">
+      <div id="yr-season" class="card" style="margin-bottom:14px"></div>
+      <div class="card" style="margin-bottom:14px"><div class="ct">Average Attendance by Season</div><div class="cw" style="height:280px"><canvas id="c-yr-avg"></canvas></div><div class="note" id="n-yr-avg"></div></div>
+      <div class="card"><div class="ct">Total Drivers by Season</div><div class="cw" style="height:280px"><canvas id="c-yr-total"></canvas></div><div class="note" id="n-yr-total"></div></div>
     </div>
 
     <div id="p-ev" class="pn">
@@ -284,10 +291,14 @@ fetch("data/nhscc_events_weather.json")
     document.getElementById("app").style.display="block";
 
     // Stat cards
-    [{lb:"Rain Correlation (r)",v:PRECIP_R,s:"Stronger rain = fewer drivers",col:"var(--bl)"},
-     {lb:"Temp Correlation (r)",v:"+"+TEMP_R,s:"Based on daily high temp",col:"var(--ac)"},
-     {lb:"Wind Correlation (r)",v:WIND_R,s:"Wind speed vs attendance",col:"var(--pu)"},
-     {lb:"Dry vs Wet Avg",v:"+"+(Math.round(DRY_AVG-WET_AVG)),s:DRY_AVG+" dry vs "+WET_AVG+" wet",col:"var(--gn)"},
+    const rainPenalty=Math.round(DRY_AVG-WET_AVG);
+    const heavyPenalty=Math.round(DRY_AVG-HEAVY_AVG);
+    const warmDry=EVENTS.filter(e=>e.precip===0&&e.tmax>=58);
+    const warmDryAvg=av(warmDry.map(e=>e.drivers));
+    [{lb:"Rain Penalty",v:"\u2212"+rainPenalty,s:"Fewer drivers per event when it rains ("+DRY_AVG+" dry vs "+WET_AVG+" wet)",col:"var(--bl)"},
+     {lb:"Heavy Rain Penalty",v:"\u2212"+heavyPenalty,s:"Fewer drivers when 0.5\"+ falls (avg "+HEAVY_AVG+" across "+heavy.length+" events)",col:"var(--pu)"},
+     {lb:"Ideal Conditions Avg",v:warmDryAvg,s:"Dry + 58\u00b0F or warmer ("+warmDry.length+" events)",col:"var(--gn)"},
+     {lb:"Overall Average",v:OA,s:"Across all "+N+" events \u00b7 2006\u20132026",col:"var(--ac)"},
     ].forEach(c=>{const d=document.createElement("div");d.className="card";d.innerHTML='<div class="sl">'+c.lb+'</div><div class="sv" style="color:'+c.col+'">'+c.v+'</div><div class="ss">'+c.s+'</div>';document.getElementById("stat-cards").appendChild(d);});
 
     document.getElementById("n1").textContent="Dashed = overall avg ("+OA+")";
@@ -315,8 +326,69 @@ fetch("data/nhscc_events_weather.json")
 
     const ta=document.getElementById("ta");
     const allH="<tr><th>Date</th><th>Year</th><th>Event</th><th>Drivers</th><th>Hi\u00b0F</th><th>Lo\u00b0F</th><th>Precip</th><th>Wind</th><th>Condition</th></tr>";
-    const allR=[...EVENTS].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>"<tr><td style='color:var(--mu)'>"+e.date+"</td><td style='color:var(--mu)'>"+e.year+"</td><td>"+e.name+"</td><td style='font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td>"+Math.round(e.tmax)+"\u00b0</td><td>"+Math.round(e.tmin)+"\u00b0</td><td style='color:"+(e.precip>0?"var(--bl)":"var(--mu)")+"'>"+e.precip.toFixed(2)+"in</td><td>"+Math.round(e.wind)+"mph</td><td>"+pill(e.condition)+"</td></tr>").join("");
+    const dMin=Math.min(...drivers),dMax=Math.max(...drivers),dRange=dMax-dMin||1;
+    const maxPrecip=Math.max(...EVENTS.map(e=>e.precip),0.01);
+    function drvCol(d){const t=(d-dMin)/dRange;const r=Math.round(239-(239-34)*t);const g=Math.round(68+(197-68)*t);const b=Math.round(68+(79-68)*t);return "rgb("+r+","+g+","+b+")";}
+    function precBg(p){if(p===0)return"";const a=Math.min(p/maxPrecip,1)*0.35+0.05;return "background:rgba(59,130,246,"+a.toFixed(2)+")";}
+    const allR=[...EVENTS].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>"<tr><td style='color:var(--mu)'>"+e.date+"</td><td style='color:var(--mu)'>"+e.year+"</td><td>"+e.name+"</td><td style='color:"+drvCol(e.drivers)+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td>"+Math.round(e.tmax)+"\u00b0</td><td>"+Math.round(e.tmin)+"\u00b0</td><td style='color:"+(e.precip>0?"#93c5fd":"var(--mu)")+";"+precBg(e.precip)+"'>"+e.precip.toFixed(2)+"in</td><td>"+Math.round(e.wind)+"mph</td><td>"+pill(e.condition)+"</td></tr>").join("");
     ta.innerHTML=allH+allR;
+
+    // === Seasons tab ===
+    const yearMap={};EVENTS.forEach(e=>{yearMap[e.year]=yearMap[e.year]||[];yearMap[e.year].push(e);});
+    const years=Object.keys(yearMap).sort();
+    const yrAvgs=years.map(y=>av(yearMap[y].map(e=>e.drivers)));
+    const yrTotals=years.map(y=>yearMap[y].reduce((s,e)=>s+e.drivers,0));
+    const yrCounts=years.map(y=>yearMap[y].length);
+
+    // Current season callout
+    const curYear=years[years.length-1];
+    const curEvents=yearMap[curYear];
+    const curAvg=av(curEvents.map(e=>e.drivers));
+    const curCount=curEvents.length;
+    const curTotal=curEvents.reduce((s,e)=>s+e.drivers,0);
+    const pastYears=years.slice(0,-1);
+    const pastAvgOfAvgs=av(pastYears.map(y=>av(yearMap[y].map(e=>e.drivers))));
+    const diffAvg=Math.round(curAvg-pastAvgOfAvgs);
+    const pctDiff=Math.round((curAvg/pastAvgOfAvgs-1)*100);
+    const peakYear=years[yrAvgs.indexOf(Math.max(...yrAvgs))];
+    const peakAvg=Math.max(...yrAvgs);
+
+    const trendCol=diffAvg>=0?"#22c55e":"#ef4444";
+    const trendArrow=diffAvg>=0?"\u25B2":"\u25BC";
+    const seasonCard=document.getElementById("yr-season");
+    seasonCard.innerHTML='<div class="ct">\uD83D\uDCC5 '+curYear+' Season So Far</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">'+
+        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+          '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">AVG ATTENDANCE</div>'+
+          '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:'+trendCol+'">'+curAvg+'</div>'+
+          '<div style="font-size:11px;color:'+trendCol+';margin-top:2px">'+trendArrow+' '+(diffAvg>=0?"+":"")+diffAvg+' vs historical ('+pastAvgOfAvgs+')</div>'+
+        '</div>'+
+        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+          '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">EVENTS / TOTAL DRIVERS</div>'+
+          '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:var(--ac)">'+curCount+'</div>'+
+          '<div style="font-size:11px;color:var(--mu);margin-top:2px">'+curTotal+' total drivers</div>'+
+        '</div>'+
+        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+          '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">VS HISTORICAL AVG</div>'+
+          '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:'+trendCol+'">'+(pctDiff>=0?"+":"")+pctDiff+'%</div>'+
+          '<div style="font-size:11px;color:var(--mu);margin-top:2px">Peak: '+peakYear+' ('+peakAvg+' avg)</div>'+
+        '</div>'+
+      '</div>'+
+      '<div style="font-size:12px;color:#94a3b8;line-height:1.7">'+
+        curYear+' is averaging <strong style="color:#f1f5f9">'+curAvg+' drivers</strong> per event across '+curCount+' event'+(curCount!==1?'s':'')+'. '+
+        (pctDiff>=10?'The club is trending well above historical norms — if this pace holds, '+curYear+' could be one of the strongest seasons on record.':
+         pctDiff>=0?'Attendance is tracking slightly above the historical average of '+pastAvgOfAvgs+' drivers per event.':
+         'Attendance is running below the historical average of '+pastAvgOfAvgs+' drivers per event.')+
+      '</div>';
+
+    // Avg attendance by season chart
+    const yrBarCols=years.map(y=>y===curYear?'#f59e0b':'#3b82f6');
+    new Chart(document.getElementById("c-yr-avg"),{type:"bar",data:{labels:years,datasets:[{data:yrAvgs,backgroundColor:yrBarCols,borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" avg drivers ("+yrCounts[c.dataIndex]+" events)"}}},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK,beginAtZero:true}}},plugins:[refY(OA)]});
+    document.getElementById("n-yr-avg").textContent="Dashed = overall avg ("+OA+") \u00b7 "+curYear+" highlighted in gold \u00b7 "+years.length+" seasons";
+
+    // Total drivers by season chart
+    new Chart(document.getElementById("c-yr-total"),{type:"bar",data:{labels:years,datasets:[{data:yrTotals,backgroundColor:years.map(y=>y===curYear?'#f59e0b':'#22c55e'),borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" total drivers ("+yrCounts[c.dataIndex]+" events, avg "+yrAvgs[c.dataIndex]+")"}}},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK,beginAtZero:true}}}});
+    document.getElementById("n-yr-total").textContent=curYear+" highlighted in gold \u00b7 total = sum of all drivers that season";
 
     document.getElementById("srch").addEventListener("input",function(){const q=this.value.toLowerCase();ta.querySelectorAll("tr:not(:first-child)").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none";});});
   })
