@@ -21,6 +21,7 @@ import json
 import sys
 import urllib.request
 import time
+from datetime import date, datetime
 from pathlib import Path
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "nhscc_events_weather.json"
@@ -28,10 +29,45 @@ DATA_FILE = Path(__file__).parent.parent / "data" / "nhscc_events_weather.json"
 LAT = 40.587960
 LON = -79.993918
 
-# Event hours: 8 AM - 5 PM Eastern = 12:00 - 21:00 UTC (EDT, which covers the season)
-# Hourly precip at hour H covers the preceding hour, so hour 12 = 11:00-12:00 UTC = 7-8 AM ET
-# We want 8 AM - 5 PM ET = hours 13, 14, 15, 16, 17, 18, 19, 20, 21 in UTC
-EVENT_HOURS_UTC = set(range(13, 22))  # 13:00 through 21:00 UTC
+# Event hours: 8 AM - 5 PM Eastern
+# EDT (UTC-4): hours 12-20 UTC  |  EST (UTC-5): hours 13-21 UTC
+# Hourly precip value at hour H covers H:00 to H+1:00
+EDT_HOURS_UTC = set(range(12, 21))  # 12:00-20:00 UTC = 8AM-5PM EDT
+EST_HOURS_UTC = set(range(13, 22))  # 13:00-21:00 UTC = 8AM-5PM EST
+
+
+def is_dst(d):
+    """Check if a date falls within US Eastern Daylight Time.
+
+    DST runs from 2nd Sunday of March at 2AM to 1st Sunday of November at 2AM.
+    """
+    year = d.year if isinstance(d, date) else int(d[:4])
+    month = int(d[5:7]) if isinstance(d, str) else d.month
+    day = int(d[8:10]) if isinstance(d, str) else d.day
+
+    if month < 3 or month > 11:
+        return False
+    if month > 3 and month < 11:
+        return True
+
+    dt = date(year, month, day)
+    if month == 3:
+        # 2nd Sunday of March
+        first = date(year, 3, 1)
+        second_sun = first.day + (6 - first.weekday()) % 7 + 7
+        return day >= second_sun
+    else:
+        # 1st Sunday of November — clocks fall back at 2 AM, so daytime
+        # events (8 AM - 5 PM) on that Sunday are still mostly on EDT.
+        # Treat the transition day itself as EDT for event-hours purposes.
+        first = date(year, 11, 1)
+        first_sun = first.day + (6 - first.weekday()) % 7
+        return day <= first_sun
+
+
+def event_hours_utc(event_date):
+    """Return the set of UTC hours for 8AM-5PM Eastern on a given date."""
+    return EDT_HOURS_UTC if is_dst(event_date) else EST_HOURS_UTC
 
 WMO_CONDITIONS = {
     0: "☀️ Sunny/Clear",
@@ -127,9 +163,10 @@ def fetch_weather(dates):
             tmax = round(daily["temperature_2m_max"][i], 1)
             tmin = round(daily["temperature_2m_min"][i], 1)
 
-            # Sum precipitation only during event hours
+            # Sum precipitation only during event hours (DST-aware)
             day_hourly = hourly_precip.get(d, {})
-            event_precip = sum(day_hourly.get(h, 0) for h in EVENT_HOURS_UTC)
+            hours = event_hours_utc(d)
+            event_precip = sum(day_hourly.get(h, 0) for h in hours)
 
             result[d] = {
                 "tmax": tmax,
