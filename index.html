@@ -77,13 +77,13 @@ tr:hover td{background:#1e293b}
               <div style="font-size:11px;color:var(--mu);margin-top:3px" id="sm-sub"></div>
             </div>
           </div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Over 20 seasons of NHSCC autocross, one thing stands out above everything else: <strong style="color:#f1f5f9">rain kills attendance.</strong> This analysis matched historical weather records from the ERA5 climate dataset — the same data used by meteorologists — to every single NHSCC event date and looked for patterns. Here’s what the numbers say.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Over 20 seasons of NHSCC autocross at North Park, one thing stands out above everything else: <strong style="color:#f1f5f9">rain kills attendance.</strong> This analysis matched historical weather records from the ERA5 climate dataset — the same data used by meteorologists — to every single NHSCC event date and looked for patterns. Precipitation is measured during event hours only (8 AM – 5 PM Eastern), so overnight rain doesn’t inflate the numbers. Here’s what the data says.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#9748; Rain Is the Biggest Factor</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px"><strong style="color:#f1f5f9" id="sm-rain-pct"></strong> And drivers notice: events with any rain at all averaged <strong style="color:#3b82f6" id="sm-wet-avg"></strong> drivers, while completely dry events averaged <strong style="color:#22c55e" id="sm-dry-avg"></strong> drivers — a gap of nearly <strong style="color:#f1f5f9" id="sm-gap"></strong> people per event.</p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">The heavier the rain, the worse the drop-off. Events with heavy rain (half an inch or more) averaged just <strong style="color:#ef4444" id="sm-heavy-avg"></strong> drivers — a massive drop from a dry day. Light drizzle events split the difference — noticeable but not devastating.</p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">The rain correlation coefficient is <strong style="color:#f1f5f9" id="sm-precip-r"></strong>, which means there’s a clear and consistent negative relationship — more rain reliably means fewer drivers.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px" id="sm-rain-summary"></p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px" id="sm-rain-detail"></p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">The rain correlation coefficient is <strong style="color:#f1f5f9" id="sm-precip-r"></strong>, which means there’s a clear and consistent negative relationship — more rain during the event reliably means fewer drivers. It’s the strongest weather signal in the data.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#127777; Temperature Matters, But Less Than You’d Think</div>
@@ -92,8 +92,8 @@ tr:hover td{background:#1e293b}
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#9729; Clouds Don’t Scare Drivers</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">One of the more counterintuitive findings: <strong style="color:#f1f5f9">overcast-but-dry days are nearly as good as sunny ones.</strong> Sunny and clear events averaged <strong id="sm-clear-avg"></strong> drivers. Overcast dry days averaged <strong id="sm-ovc-avg"></strong> — essentially the same. This matters because Pittsburgh gets a lot of overcast days.</p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">In fact, the all-time highest-attended event — the <strong style="color:#f1f5f9" id="sm-best-event"></strong> — was on an overcast day with no rain.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">One of the more counterintuitive findings: <strong style="color:#f1f5f9">overcast-but-dry days are nearly as good as sunny ones.</strong> Sunny and clear events averaged <strong id="sm-clear-avg"></strong> drivers. Overcast dry days averaged <strong id="sm-ovc-avg"></strong>. This matters because Pittsburgh gets a lot of overcast days — and the data says they're not a problem.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">The all-time highest-attended event — the <strong style="color:#f1f5f9" id="sm-best-event"></strong> — was on a dry day with a pleasant 65°F high. It's the cause, not the clouds, that matters most.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#128214; The Weather Events That Tell the Story</div>
@@ -102,21 +102,29 @@ tr:hover td{background:#1e293b}
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#128168; Wind Is a Minor Factor</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Wind speed shows a mild negative correlation with attendance (<strong style="color:#f1f5f9" id="sm-wind-r"></strong>), but it’s the weakest of the three weather factors. Wind rarely appears to be the deciding factor on its own.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Wind speed shows a mild negative correlation with attendance (<strong style="color:#f1f5f9" id="sm-wind-r"></strong>), but it’s the weakest of the three weather factors. Wind rarely appears to be the deciding factor on its own — it usually shows up alongside cold or rainy conditions that are already suppressing turnout.</p>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="ct">&#10084;&#65039; The HDSA Effect</div>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px" id="sm-hdsa"></p>
+        </div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="ct">&#128200; The Biggest Swing</div>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px" id="sm-swing"></p>
         </div>
         <div class="card">
           <div class="ct">&#128204; The Bottom Line</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">If you want to predict whether an NHSCC event will have strong turnout, check two things: <strong style="color:#f1f5f9">Is it going to rain? And will the high temp be above 55°F?</strong></p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">If you want to predict whether an NHSCC event will have strong turnout, check two things: <strong style="color:#f1f5f9">Is it going to rain? And will the high temp be above 55°F?</strong> Get both of those right and you’re almost guaranteed a solid crowd.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px">
               <div style="font-size:11px;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Best Case</div>
-              <div style="font-size:13px;color:#22c55e;line-height:1.8">✓ Dry (no rain)<br>✓ High temp 68–77°F<br>✓ Light wind<br>✓ Any sky condition</div>
-              <div style="font-size:20px;font-weight:700;color:#22c55e;font-family:system-ui,sans-serif;margin-top:8px">~95 drivers</div>
+              <div style="font-size:13px;color:#22c55e;line-height:1.8">✓ Dry (no rain)<br>✓ High temp 68–77°F<br>✓ Light wind<br>✓ HDSA / charity event</div>
+              <div style="font-size:20px;font-weight:700;color:#22c55e;font-family:system-ui,sans-serif;margin-top:8px" id="sm-best-case"></div>
             </div>
             <div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px">
               <div style="font-size:11px;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Worst Case</div>
               <div style="font-size:13px;color:#ef4444;line-height:1.8">✗ Heavy rain (0.5"+)<br>✗ High temp below 50°F<br>✗ Strong wind<br>✗ Late October/November</div>
-              <div style="font-size:20px;font-weight:700;color:#ef4444;font-family:system-ui,sans-serif;margin-top:8px">~65 drivers</div>
+              <div style="font-size:20px;font-weight:700;color:#ef4444;font-family:system-ui,sans-serif;margin-top:8px" id="sm-worst-case"></div>
             </div>
           </div>
         </div>
@@ -204,11 +212,18 @@ fetch("data/nhscc_events_weather.json")
 
     // Populate summary
     document.getElementById("sm-sub").textContent=N+" events \u00b7 2006\u20132026 \u00b7 ERA5 reanalysis weather data for North Park, Gibsonia PA";
-    document.getElementById("sm-rain-pct").textContent=(Math.round(wet.length/N*100))+"% of NHSCC events \u2014 "+wet.length+" out of "+N+" \u2014 had some measurable rainfall on event day. That\u2019s more than half.";
-    document.getElementById("sm-wet-avg").textContent=WET_AVG;
-    document.getElementById("sm-dry-avg").textContent=DRY_AVG;
-    document.getElementById("sm-gap").textContent=Math.round(DRY_AVG-WET_AVG);
-    document.getElementById("sm-heavy-avg").textContent=HEAVY_AVG;
+    const wetPct=Math.round(wet.length/N*100);
+    const wetHalf=wetPct>50?"That\u2019s more than half.":wetPct===50?"That\u2019s exactly half.":"That\u2019s just under half.";
+
+    const gap=Math.round(DRY_AVG-WET_AVG);
+    document.getElementById("sm-rain-summary").innerHTML="<strong style='color:#f1f5f9'>"+wetPct+"% of NHSCC events \u2014 "+wet.length+" out of "+N+" \u2014 had measurable rainfall during the event. "+wetHalf+"</strong> And drivers notice: events with any rain averaged <strong style='color:#3b82f6'>"+WET_AVG+"</strong> drivers, while completely dry events averaged <strong style='color:#22c55e'>"+DRY_AVG+"</strong> drivers \u2014 a gap of <strong style='color:#f1f5f9'>"+gap+"</strong> people per event.";
+
+    const mod=EVENTS.filter(e=>e.precip>=0.1&&e.precip<0.5);
+    const modAvg=av(mod.map(e=>e.drivers));
+    const lt=EVENTS.filter(e=>e.precip>0&&e.precip<0.1);
+    const ltAvg=av(lt.map(e=>e.drivers));
+    document.getElementById("sm-rain-detail").innerHTML="The data breaks down into three tiers. <strong style='color:#ef4444'>Heavy rain</strong> (0.5\u201d+ during the event) averaged just <strong style='color:#ef4444'>"+HEAVY_AVG+"</strong> drivers across "+heavy.length+" events \u2014 a brutal drop. <strong style='color:#3b82f6'>Moderate rain</strong> (0.1\u20130.5\u201d) averaged <strong style='color:#3b82f6'>"+modAvg+"</strong> across "+mod.length+" events. <strong style='color:#7dd3fc'>Light drizzle</strong> (under 0.1\u201d) averaged <strong style='color:#7dd3fc'>"+ltAvg+"</strong> across "+lt.length+" events \u2014 noticeable but not devastating.";
+
     document.getElementById("sm-precip-r").textContent=PRECIP_R;
     document.getElementById("sm-temp-r").textContent="+"+TEMP_R;
     document.getElementById("sm-wind-r").textContent=WIND_R;
@@ -225,11 +240,37 @@ fetch("data/nhscc_events_weather.json")
     const bestEv=BEST[0];
     document.getElementById("sm-best-event").textContent=bestEv.year+" "+bestEv.name+" with "+bestEv.drivers+" drivers";
 
+    // HDSA effect
+    const hdsa=EVENTS.filter(e=>e.name.toUpperCase().includes("HDSA"));
+    if(hdsa.length>0){
+      const hdsaAvg=av(hdsa.map(e=>e.drivers));
+      document.getElementById("sm-hdsa").innerHTML="HDSA charity events are in a league of their own. Across <strong style='color:#f1f5f9'>"+hdsa.length+" HDSA events</strong>, attendance averaged <strong style='color:#22c55e'>"+hdsaAvg+" drivers</strong> \u2014 nearly "+Math.round((hdsaAvg/OA-1)*100)+"% above the overall average. The cause clearly draws people who might otherwise stay home. Four of the five highest-attended events in NHSCC history were HDSA benefits.";
+    }
+
+    // Biggest swing between consecutive events
+    const sorted=[...EVENTS].sort((a,b)=>a.date.localeCompare(b.date));
+    let maxSwing=0,swA,swB;
+    for(let i=0;i<sorted.length-1;i++){
+      const swing=Math.abs(sorted[i].drivers-sorted[i+1].drivers);
+      if(swing>maxSwing){maxSwing=swing;swA=sorted[i];swB=sorted[i+1];}
+    }
+    if(swA&&swB){
+      const hi=swA.drivers>swB.drivers?swA:swB;
+      const lo=swA.drivers>swB.drivers?swB:swA;
+      document.getElementById("sm-swing").innerHTML="The biggest attendance swing between consecutive events was <strong style='color:#f1f5f9'>"+maxSwing+" drivers</strong>. "+hi.name+" ("+hi.year+") drew <strong style='color:#22c55e'>"+hi.drivers+"</strong> on a "+Math.round(hi.tmax)+"\u00b0F day with "+hi.precip.toFixed(2)+"\u201d of rain. The very next event, "+lo.name+", drew just <strong style='color:#ef4444'>"+lo.drivers+"</strong> with "+lo.precip.toFixed(2)+"\u201d of rain at "+Math.round(lo.tmax)+"\u00b0F. Weather makes the difference.";
+    }
+
+    // Best/worst case numbers
+    const dryWarm=EVENTS.filter(e=>e.precip===0&&e.tmax>=68&&e.tmax<78);
+    document.getElementById("sm-best-case").textContent="~"+av(dryWarm.map(e=>e.drivers))+" drivers";
+    const coldWet=EVENTS.filter(e=>e.precip>0&&e.tmax<55);
+    document.getElementById("sm-worst-case").textContent="~"+av(coldWet.map(e=>e.drivers))+" drivers";
+
     const stories=[
-      {border:"#7c3aed",icon:"\u26c8\ufe0f",title:"Frankenstorm Event 9 \u2014 October 28, 2012 \u2014 29 drivers",body:"Hurricane Sandy\u2019s remnants moved through western PA that weekend. The data shows 0.18 inches of rain during the event and a high of only 46\u00b0F. This is the lowest-attended event in NHSCC history. 29 people showed up anyway \u2014 respect."},
+      {border:"#7c3aed",icon:"\u26c8\ufe0f",title:"Frankenstorm Event 9 \u2014 October 28, 2012 \u2014 29 drivers",body:"Hurricane Sandy\u2019s remnants moved through western PA that weekend. The data shows 0.15 inches of rain during the event and a high of only 46\u00b0F. This is the lowest-attended event in NHSCC history. 29 people showed up anyway \u2014 respect."},
       {border:"#7c3aed",icon:"\uD83C\uDF0A",title:"The Great Flood Event #4 \u2014 May 15, 2011 \u2014 44 drivers",body:"ERA5 recorded 0.43 inches of rain during event hours \u2014 one of the highest precipitation totals of any event day. Combined with a 66\u00b0F high, conditions were rough. Still drew 44 people."},
       {border:"#3b82f6",icon:"\uD83C\uDF27\ufe0f",title:"Rainy Points #2 \u2014 April 14, 2019 \u2014 44 drivers",body:"The name says it all. This event saw 0.56 inches of rain during the day and drew only 44 drivers. Notably, just the week before (Sunny Points 1) drew 135 \u2014 the 4th highest ever. What a difference a week makes."},
-      {border:"#f59e0b",icon:"\u2600\ufe0f",title:"Sunny Points 1 \u2014 April 7, 2019 \u2014 135 drivers",body:"ERA5 recorded a trace of rain (0.03 inches) during the event \u2014 but 135 drivers showed up anyway. Goes to show: a trace of drizzle doesn\u2019t always deter people."},
+      {border:"#f59e0b",icon:"\u2600\ufe0f",title:"Sunny Points 1 \u2014 April 7, 2019 \u2014 135 drivers",body:"ERA5 recorded barely a trace of rain (0.01 inches) during the event \u2014 but 135 drivers showed up anyway. Goes to show: a trace of drizzle doesn\u2019t always deter people."},
       {border:"#6ee7b7",icon:"\uD83D\uDE05",title:"Not Gonna Rain \u2014 April 30, 2023 \u2014 54 drivers",body:"It rained. 0.06 inches during the event, but still. Only 54 drivers showed up. The name was optimistic."},
       {border:"#93c5fd",icon:"\uD83E\uDD76",title:"First Annual Frost Across \u2014 October 29, 2017 \u2014 35 drivers",body:"High of 43\u00b0F and 0.12 inches of rain during the event. Cold AND wet \u2014 the worst combination in the data. 35 drivers is 4th lowest all-time. The Frost Across brand was born out of this event\u2019s misery."},
     ];
