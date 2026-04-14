@@ -87,7 +87,7 @@ tr:hover td{background:#1e293b}
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#127777; Temperature Matters, But Less Than You’d Think</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">Warmer days do tend to draw more drivers — the correlation is <strong style="color:#f1f5f9" id="sm-temp-r"></strong> — but the sweet spot appears to be <strong style="color:#fb923c">warm days with highs in the 68–77°F range</strong>, which averaged <strong id="sm-warm-avg"></strong> drivers. Scorching hot days (78°F+) averaged just slightly less, suggesting extreme heat may actually discourage some participants.</p>
+          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">Warmer days do tend to draw more drivers — the correlation is <strong style="color:#f1f5f9" id="sm-temp-r"></strong> — but the sweet spot appears to be <strong style="color:#fb923c">warm days with highs in the 68–77°F range</strong>, which averaged <strong id="sm-warm-avg"></strong> drivers. Hot days (78°F+) averaged a similar <strong id="sm-hot-avg"></strong> — warm weather in general is good for turnout.</p>
           <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Cold events are the real attendance killers on the temperature side. Events where the high didn’t crack 45°F averaged only <strong style="color:#93c5fd" id="sm-cold-avg"></strong> drivers — the lowest of any temperature bucket.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
@@ -203,7 +203,7 @@ fetch("data/nhscc_events_weather.json")
     const HEAVY_AVG=av(heavy.map(e=>e.drivers));
 
     // Populate summary
-    document.getElementById("sm-sub").textContent=N+" events \u00b7 2006\u20132026 \u00b7 ERA5 reanalysis weather data for Gibsonia, PA";
+    document.getElementById("sm-sub").textContent=N+" events \u00b7 2006\u20132026 \u00b7 ERA5 reanalysis weather data for North Park, Gibsonia PA";
     document.getElementById("sm-rain-pct").textContent=(Math.round(wet.length/N*100))+"% of NHSCC events \u2014 "+wet.length+" out of "+N+" \u2014 had some measurable rainfall on event day. That\u2019s more than half.";
     document.getElementById("sm-wet-avg").textContent=WET_AVG;
     document.getElementById("sm-dry-avg").textContent=DRY_AVG;
@@ -214,6 +214,8 @@ fetch("data/nhscc_events_weather.json")
     document.getElementById("sm-wind-r").textContent=WIND_R;
     const warm=EVENTS.filter(e=>e.tmax>=68&&e.tmax<78);
     document.getElementById("sm-warm-avg").textContent=av(warm.map(e=>e.drivers));
+    const hot=EVENTS.filter(e=>e.tmax>=78);
+    document.getElementById("sm-hot-avg").textContent=av(hot.map(e=>e.drivers));
     const cold=EVENTS.filter(e=>e.tmax<45);
     document.getElementById("sm-cold-avg").textContent=av(cold.map(e=>e.drivers));
     const clear=EVENTS.filter(e=>e.condition.includes("Sunny"));
@@ -224,18 +226,18 @@ fetch("data/nhscc_events_weather.json")
     document.getElementById("sm-best-event").textContent=bestEv.year+" "+bestEv.name+" with "+bestEv.drivers+" drivers";
 
     const stories=[
-      {border:"#7c3aed",icon:"\u26c8\ufe0f",title:"Frankenstorm Event 9 \u2014 October 28, 2012 \u2014 29 drivers",body:"Hurricane Sandy\u2019s remnants moved through western PA that weekend. The data shows 0.47 inches of rain and a high of only 46\u00b0F. This is the lowest-attended event in NHSCC history. 29 people showed up anyway \u2014 respect."},
-      {border:"#7c3aed",icon:"\uD83C\uDF0A",title:"The Great Flood Event #4 \u2014 May 15, 2011 \u2014 44 drivers",body:"ERA5 recorded 0.71 inches of rain \u2014 one of the highest precipitation totals of any event day. Combined with a 58\u00b0F high, conditions were rough. Still drew 44 people."},
-      {border:"#3b82f6",icon:"\uD83C\uDF27\ufe0f",title:"Rainy Points #2 \u2014 April 14, 2019 \u2014 44 drivers",body:"The name says it all. This event saw the most rainfall of any in the dataset \u2014 0.97 inches \u2014 and drew only 44 drivers. Notably, the very next week (Sunny Points 1) drew 135 \u2014 the 4th highest ever."},
-      {border:"#f59e0b",icon:"\u2600\ufe0f",title:"Sunny Points 1 \u2014 April 7, 2019 \u2014 135 drivers",body:"Ironically, ERA5 recorded 0.14 inches of rain this day \u2014 technically a light rain event \u2014 but 135 drivers showed up anyway. Goes to show: light drizzle doesn\u2019t always deter people."},
-      {border:"#6ee7b7",icon:"\uD83D\uDE05",title:"Not Gonna Rain \u2014 April 30, 2023 \u2014 54 drivers",body:"It rained. 0.04 inches, but still. Only 54 drivers showed up. The name was optimistic."},
-      {border:"#93c5fd",icon:"\uD83E\uDD76",title:"First Annual Frost Across \u2014 October 29, 2017 \u2014 35 drivers",body:"High of 43\u00b0F and 0.67 inches of rain. Cold AND wet \u2014 the worst combination in the data. 35 drivers is 2nd lowest all-time. The Frost Across brand was born out of this event\u2019s misery."},
+      {border:"#7c3aed",icon:"\u26c8\ufe0f",title:"Frankenstorm Event 9 \u2014 October 28, 2012 \u2014 29 drivers",body:"Hurricane Sandy\u2019s remnants moved through western PA that weekend. The data shows 0.43 inches of rain and a high of only 46\u00b0F. This is the lowest-attended event in NHSCC history. 29 people showed up anyway \u2014 respect."},
+      {border:"#7c3aed",icon:"\uD83C\uDF0A",title:"The Great Flood Event #4 \u2014 May 15, 2011 \u2014 44 drivers",body:"ERA5 recorded 0.75 inches of rain \u2014 one of the highest precipitation totals of any event day. Combined with a 66\u00b0F high, conditions were rough. Still drew 44 people."},
+      {border:"#3b82f6",icon:"\uD83C\uDF27\ufe0f",title:"Rainy Points #2 \u2014 April 14, 2019 \u2014 44 drivers",body:"The name says it all. This event saw 0.56 inches of rain and drew only 44 drivers. Notably, just the week before (Sunny Points 1) drew 135 \u2014 the 4th highest ever. What a difference a week makes."},
+      {border:"#f59e0b",icon:"\u2600\ufe0f",title:"Sunny Points 1 \u2014 April 7, 2019 \u2014 135 drivers",body:"ERA5 recorded a trace of rain (0.05 inches) this day \u2014 but 135 drivers showed up anyway. Goes to show: a trace of drizzle doesn\u2019t always deter people."},
+      {border:"#6ee7b7",icon:"\uD83D\uDE05",title:"Not Gonna Rain \u2014 April 30, 2023 \u2014 54 drivers",body:"It rained. 0.06 inches, but still. Only 54 drivers showed up. The name was optimistic."},
+      {border:"#93c5fd",icon:"\uD83E\uDD76",title:"First Annual Frost Across \u2014 October 29, 2017 \u2014 35 drivers",body:"High of 43\u00b0F and 0.85 inches of rain. Cold AND wet \u2014 the worst combination in the data. 35 drivers is 4th lowest all-time. The Frost Across brand was born out of this event\u2019s misery."},
     ];
     const sc=document.getElementById("sm-stories");
     stories.forEach(s=>{const d=document.createElement("div");d.style.cssText="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:12px 16px;border-left:3px solid "+s.border;d.innerHTML='<div style="font-size:12px;font-weight:600;color:#f1f5f9;margin-bottom:3px">'+s.icon+" "+s.title+'</div><div style="font-size:11px;color:#94a3b8;line-height:1.7">'+s.body+'</div>';sc.appendChild(d);});
 
     // Header
-    document.getElementById("hdr-sub").textContent="Gibsonia PA 15044 \u00b7 ERA5 reanalysis via Open-Meteo \u00b7 "+N+" events \u00b7 2006\u20132026";
+    document.getElementById("hdr-sub").textContent="North Park, Gibsonia PA \u00b7 ERA5 reanalysis via Open-Meteo \u00b7 "+N+" events \u00b7 2006\u20132026";
     document.getElementById("tabs").style.display="flex";
     document.getElementById("loading").style.display="none";
     document.getElementById("app").style.display="block";
