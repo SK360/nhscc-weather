@@ -169,9 +169,12 @@ tr:hover td{background:var(--hover)}
     </div>
 
     <div id="p-sc" class="pn">
+      <div class="card" style="margin-bottom:14px;padding:12px 18px">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap" id="sc-legend"></div>
+      </div>
       <div class="g2">
-        <div class="card"><div class="ct">High Temp vs Attendance &nbsp;<span id="sr1" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c5"></canvas></div></div>
-        <div class="card"><div class="ct">Precipitation vs Attendance &nbsp;<span id="sr2" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c6"></canvas></div></div>
+        <div class="card"><div class="ct">High Temp vs Attendance &nbsp;<span id="sr1" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c5"></canvas></div><div class="note" id="n-sc1"></div></div>
+        <div class="card"><div class="ct">Precipitation vs Attendance (Wet Events Only) &nbsp;<span id="sr2" style="font-size:11px;color:var(--mu);font-weight:400"></span></div><div class="cw" style="height:300px"><canvas id="c6"></canvas></div><div class="note" id="n-sc2"></div></div>
       </div>
     </div>
 
@@ -338,8 +341,8 @@ fetch("data/nhscc_events_weather.json")
 
     document.getElementById("n1").textContent="Dashed = overall avg ("+OA+")";
     document.getElementById("n3").textContent="Dashed = overall avg ("+OA+") \u00b7 bucketed by daily high temp";
-    document.getElementById("sr1").textContent="r = "+TEMP_R+" \u00b7 x = daily high \u00b7 colored by condition";
-    document.getElementById("sr2").textContent="r = "+PRECIP_R+" \u00b7 colored by condition";
+    document.getElementById("sr1").textContent="r = "+TEMP_R+" \u00b7 all "+N+" events";
+    document.getElementById("sr2").textContent="r = "+PRECIP_R+" (all events)";
 
     new Chart(document.getElementById("c1"),{type:"bar",data:{labels:BY_COND.map(d=>d.condition),datasets:[{data:BY_COND.map(d=>d.avg),backgroundColor:BY_COND.map(d=>d.color),borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" drivers ("+BY_COND[c.dataIndex].count+" events)"}}}},plugins:[refY(OA)]});
     new Chart(document.getElementById("c2"),{type:"bar",data:{labels:BY_COND.map(d=>d.condition),datasets:[{data:BY_COND.map(d=>d.count),backgroundColor:BY_COND.map(d=>d.color),borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" events"}}}}});
@@ -348,11 +351,32 @@ fetch("data/nhscc_events_weather.json")
     const ti=document.getElementById("ti");
     BY_TEMP.forEach((d,i)=>{const diff=Math.round(d.avg-OA);const el=document.createElement("div");el.className="is";el.innerHTML='<div class="isl">'+d.label+'</div><div class="isv" style="color:'+TCOL[i]+'">'+d.avg+'</div><div class="iss">'+d.count+' events \u00b7 <span style="color:'+(diff>=0?"var(--gn)":"var(--rd)")+'">'+(diff>=0?"+":"")+diff+' vs avg</span></div>';ti.appendChild(el);});
 
+    // Scatter legend
+    const legEl=document.getElementById("sc-legend");
+    legEl.innerHTML='<span style="font-size:11px;color:var(--mu);margin-right:4px">Colored by condition:</span>'+
+      Object.entries(CCOL).map(([c,col])=>'<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px"><span style="width:10px;height:10px;border-radius:50%;background:'+col+';display:inline-block"></span><span style="color:var(--sub2)">'+c+'</span></span>').join('');
+
+    // Linear regression helper
+    function linReg(pts){const n=pts.length;if(n<2)return null;const sx=pts.reduce((s,p)=>s+p.x,0),sy=pts.reduce((s,p)=>s+p.y,0);const mx=sx/n,my=sy/n;const num=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);const den=pts.reduce((s,p)=>s+(p.x-mx)**2,0);if(!den)return null;const m=num/den,b=my-m*mx;const xMin=Math.min(...pts.map(p=>p.x)),xMax=Math.max(...pts.map(p=>p.x));return[{x:xMin,y:m*xMin+b},{x:xMax,y:m*xMax+b}];}
+
+    // Temp scatter with trend line
     const CCOLA=EVENTS.map(e=>CCOL[e.condition]||"#888");
-    const SD=EVENTS.map(e=>({x:Math.round(e.tmax),y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers @ "+Math.round(e.tmax)+"\u00b0F high"}));
-    new Chart(document.getElementById("c5"),{type:"scatter",data:{datasets:[{data:SD,pointBackgroundColor:CCOLA,pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Daily High Temp (\u00b0F)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
-    const SP=EVENTS.map(e=>({x:Math.round(e.precip*100)/100,y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers, "+e.precip.toFixed(2)+"in"}));
-    new Chart(document.getElementById("c6"),{type:"scatter",data:{datasets:[{data:SP,pointBackgroundColor:EVENTS.map(e=>CCOL[e.condition]||"#888"),pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Precipitation (inches)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
+    const SD=EVENTS.map(e=>({x:Math.round(e.tmax),y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers @ "+Math.round(e.tmax)+"\u00b0F high, "+e.condition}));
+    const tempTrend=linReg(SD);
+    const tempDS=[{data:SD,pointBackgroundColor:CCOLA,pointRadius:5,pointHoverRadius:7}];
+    if(tempTrend)tempDS.push({type:"line",data:tempTrend,borderColor:TC.ac,borderWidth:2,borderDash:[6,4],pointRadius:0,pointHoverRadius:0});
+    new Chart(document.getElementById("c5"),{type:"scatter",data:{datasets:tempDS},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,filter:c=>c.datasetIndex===0,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Daily High Temp (\u00b0F)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
+    document.getElementById("n-sc1").textContent="Dashed line = linear trend \u00b7 warmer temps trend toward higher attendance";
+
+    // Precip scatter — wet events only, with trend line
+    const wetEvents=EVENTS.filter(e=>e.precip>0);
+    const wetR=pr(wetEvents.map(e=>e.precip),wetEvents.map(e=>e.drivers));
+    const SP=wetEvents.map(e=>({x:Math.round(e.precip*100)/100,y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers, "+e.precip.toFixed(2)+"\" rain, "+e.condition}));
+    const precTrend=linReg(SP);
+    const precDS=[{data:SP,pointBackgroundColor:wetEvents.map(e=>CCOL[e.condition]||"#888"),pointRadius:5,pointHoverRadius:7}];
+    if(precTrend)precDS.push({type:"line",data:precTrend,borderColor:TC.ac,borderWidth:2,borderDash:[6,4],pointRadius:0,pointHoverRadius:0});
+    new Chart(document.getElementById("c6"),{type:"scatter",data:{datasets:precDS},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,filter:c=>c.datasetIndex===0,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Precipitation (inches)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
+    document.getElementById("n-sc2").textContent="Showing "+wetEvents.length+" wet events only ("+dry.length+" dry events excluded) \u00b7 r = "+wetR;
 
     function hdr(){return "<tr><th>Year</th><th>Event</th><th class='num'>Drivers</th><th class='num'>Hi\u00b0F</th><th class='num'>Precip</th><th>Condition</th></tr>";}
     function row(e,nc){return "<tr><td style='color:var(--mu)'>"+e.year+"</td><td style='max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' title='"+e.name+"'>"+e.name+"</td><td class='num' style='color:"+nc+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td class='num' style='color:var(--sub2)'>"+Math.round(e.tmax)+"\u00b0</td><td class='num' style='color:"+(e.precip>0?"var(--bl)":"var(--mu)")+"'>"+e.precip.toFixed(2)+"\"</td><td>"+pill(e.condition)+"</td></tr>";}
