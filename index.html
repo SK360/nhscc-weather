@@ -6,51 +6,72 @@
 <title>NHSCC Weather × Attendance · 2006–2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#0a0e1a;--card:#111827;--bd:#1e293b;--b2:#334155;--tx:#e2e8f0;--mu:#64748b;--ac:#f59e0b;--gn:#22c55e;--bl:#3b82f6;--rd:#ef4444;--pu:#a78bfa}
+:root,html[data-theme="dark"]{--bg:#0a0e1a;--card:#111827;--bd:#1e293b;--b2:#334155;--tx:#e2e8f0;--mu:#64748b;--ac:#f59e0b;--gn:#22c55e;--bl:#3b82f6;--rd:#ef4444;--pu:#a78bfa;--tx2:#f1f5f9;--sub:#cbd5e1;--sub2:#94a3b8;--sub3:#475569;--inset:#0a0e1a;--hover:#1e293b;--tdb:#0f172a;--tt-bg:#1e293b;--tt-bd:#334155;--gr:#1e293b;--tab-off:#94a3b8;--tab-on-tx:#0a0e1a}
+html[data-theme="light"]{--bg:#f1f5f9;--card:#ffffff;--bd:#e2e8f0;--b2:#cbd5e1;--tx:#1e293b;--mu:#64748b;--ac:#d97706;--gn:#16a34a;--bl:#2563eb;--rd:#dc2626;--pu:#7c3aed;--tx2:#0f172a;--sub:#334155;--sub2:#475569;--sub3:#94a3b8;--inset:#f8fafc;--hover:#f1f5f9;--tdb:#e2e8f0;--tt-bg:#ffffff;--tt-bd:#e2e8f0;--gr:#e2e8f0;--tab-off:#475569;--tab-on-tx:#ffffff}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font-family:monospace;min-height:100vh}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;transition:background .2s,color .2s}
+table,td,th,.note,.pill{font-family:'SF Mono',ui-monospace,monospace}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 .hdr{border-bottom:1px solid var(--bd);padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .bar{width:6px;height:26px;background:var(--ac);border-radius:2px;flex-shrink:0}
-.ht{font-family:system-ui,sans-serif;font-size:17px;font-weight:700;color:#f1f5f9}
-.hs{font-size:10px;color:var(--mu);margin-top:2px}
+.ht{font-family:system-ui,sans-serif;font-size:17px;font-weight:700;color:var(--tx2)}
+.hs{font-size:11px;color:var(--mu);margin-top:2px}
+.theme-toggle{background:none;border:1px solid var(--b2);color:var(--mu);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--ac);color:var(--ac)}
 .tabs{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
-.tab{background:none;border:1px solid var(--b2);color:#94a3b8;padding:6px 13px;cursor:pointer;border-radius:6px;font:inherit;font-size:11px;transition:.15s;white-space:nowrap}
+.tab{background:none;border:1px solid var(--b2);color:var(--tab-off);padding:8px 16px;cursor:pointer;border-radius:6px;font:inherit;font-size:13px;transition:.15s;white-space:nowrap}
 .tab:hover{border-color:var(--ac);color:var(--ac)}
-.tab.on{background:var(--ac);border-color:var(--ac);color:#0a0e1a;font-weight:700}
+.tab.on{background:var(--ac);border-color:var(--ac);color:var(--tab-on-tx);font-weight:700}
 .pg{padding:18px 22px}
 .pn{display:none}.pn.on{display:block}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:800px){.g4{grid-template-columns:1fr 1fr}}
 @media(max-width:680px){.g2{grid-template-columns:1fr}.g4{grid-template-columns:1fr 1fr}}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:11px;padding:18px}
-.ct{font-family:system-ui,sans-serif;font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:12px}
-.sl{font-size:10px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+@media(max-width:500px){.g4{grid-template-columns:1fr}.yr-stats{grid-template-columns:1fr !important}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:11px;padding:18px;transition:border-color .2s}
+.card:hover{border-color:var(--b2)}
+.ct{font-family:system-ui,sans-serif;font-size:14px;font-weight:600;color:var(--tx2);margin-bottom:12px}
+.sl{font-size:11px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
 .sv{font-family:system-ui,sans-serif;font-size:26px;font-weight:700}
-.ss{font-size:11px;color:#475569;margin-top:3px}
+.ss{font-size:11px;color:var(--sub3);margin-top:3px}
 .cw{position:relative;height:230px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.7px;padding:5px 7px;border-bottom:1px solid var(--bd);text-align:left;font-weight:400}
-td{padding:6px 7px;border-bottom:1px solid #0f172a}
-tr:hover td{background:#1e293b}
-.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-.note{font-size:10px;color:#475569;margin-top:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.7px;padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left;font-weight:400}
+th.num{text-align:right}
+td{padding:7px 8px;border-bottom:1px solid var(--tdb)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:hover td{background:var(--hover)}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.note{font-size:11px;color:var(--sub3);margin-top:5px}
 .iw{display:flex;gap:9px;flex-wrap:wrap}
-.is{background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:11px 13px;flex:1;min-width:120px}
+.is{background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:11px 13px;flex:1;min-width:120px}
 .isl{font-size:11px;color:var(--mu);margin-bottom:3px}
 .isv{font-family:system-ui,sans-serif;font-size:20px;font-weight:700}
-.iss{font-size:10px;color:#475569;margin-top:2px}
-#srch{background:#0a0e1a;border:1px solid var(--b2);color:var(--tx);padding:7px 11px;border-radius:6px;font:inherit;font-size:12px;width:100%;margin-bottom:10px}
+.iss{font-size:11px;color:var(--sub3);margin-top:2px}
+#srch{background:var(--inset);border:1px solid var(--b2);color:var(--tx);padding:8px 12px;border-radius:6px;font:inherit;font-size:13px;width:100%;margin-bottom:10px}
 .loading{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:16px;color:var(--mu);font-size:13px}
 .spinner{width:36px;height:36px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.hide-mobile{} @media(max-width:680px){.hide-mobile{display:none}}
+.footer{border-top:1px solid var(--bd);padding:18px 22px;text-align:center;font-size:11px;color:var(--sub3)}
+.footer a{color:var(--mu);text-decoration:none}.footer a:hover{color:var(--ac)}
 </style>
+<script>
+// Theme: respect saved preference, then system preference, default dark
+(function(){
+  const saved=localStorage.getItem('nhscc-theme');
+  const prefer=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';
+  document.documentElement.setAttribute('data-theme',saved||prefer);
+})();
+</script>
 </head>
 <body>
 
 <div class="hdr">
   <div class="bar"></div>
   <div><div class="ht">NHSCC Weather × Attendance</div><div class="hs" id="hdr-sub">Loading data…</div></div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" id="theme-btn">🌙</button>
   <div class="tabs" id="tabs" style="display:none">
     <button class="tab on" onclick="show('sm',this)">Summary</button>
     <button class="tab"    onclick="show('ov',this)">Overview</button>
@@ -74,58 +95,58 @@ tr:hover td{background:#1e293b}
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
             <span style="font-size:28px">&#127750;</span>
             <div>
-              <div style="font-family:system-ui,sans-serif;font-size:19px;font-weight:700;color:#f1f5f9">NHSCC Weather &amp; Attendance — 20 Years of Data</div>
+              <div style="font-family:system-ui,sans-serif;font-size:19px;font-weight:700;color:var(--tx2)">NHSCC Weather &amp; Attendance — 20 Years of Data</div>
               <div style="font-size:11px;color:var(--mu);margin-top:3px" id="sm-sub"></div>
             </div>
           </div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Over 20 seasons of NHSCC autocross at North Park, one thing stands out above everything else: <strong style="color:#f1f5f9">rain kills attendance.</strong> This analysis matched historical weather records from the ERA5 climate dataset — the same data used by meteorologists — to every single NHSCC event date and looked for patterns. Precipitation is measured during event hours only (8 AM – 5 PM Eastern), so overnight rain doesn’t inflate the numbers. Here’s what the data says.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px">Over 20 seasons of NHSCC autocross at North Park, one thing stands out above everything else: <strong style="color:var(--tx2)">rain kills attendance.</strong> This analysis matched historical weather records from the ERA5 climate dataset — the same data used by meteorologists — to every single NHSCC event date and looked for patterns. Precipitation is measured during event hours only (8 AM – 5 PM Eastern), so overnight rain doesn’t inflate the numbers. Here’s what the data says.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#9748; Rain Is the Biggest Factor</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px" id="sm-rain-summary"></p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px" id="sm-rain-detail"></p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">The rain correlation coefficient is <strong style="color:#f1f5f9" id="sm-precip-r"></strong>, which means there’s a clear and consistent negative relationship — more rain during the event reliably means fewer drivers. It’s the strongest weather signal in the data.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:12px" id="sm-rain-summary"></p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:12px" id="sm-rain-detail"></p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px">The rain correlation coefficient is <strong style="color:var(--tx2)" id="sm-precip-r"></strong>, which means there’s a clear and consistent negative relationship — more rain during the event reliably means fewer drivers. It’s the strongest weather signal in the data.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#127777; Temperature Matters, But Less Than You’d Think</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">Warmer days do tend to draw more drivers — the correlation is <strong style="color:#f1f5f9" id="sm-temp-r"></strong> — but the sweet spot appears to be <strong style="color:#fb923c">warm days with highs in the 68–77°F range</strong>, which averaged <strong id="sm-warm-avg"></strong> drivers. Hot days (78°F+) averaged a similar <strong id="sm-hot-avg"></strong> — warm weather in general is good for turnout.</p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Cold events are the real attendance killers on the temperature side. Events where the high didn’t crack 45°F averaged only <strong style="color:#93c5fd" id="sm-cold-avg"></strong> drivers — the lowest of any temperature bucket.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:12px">Warmer days do tend to draw more drivers — the correlation is <strong style="color:var(--tx2)" id="sm-temp-r"></strong> — but the sweet spot appears to be <strong style="color:#fb923c">warm days with highs in the 68–77°F range</strong>, which averaged <strong id="sm-warm-avg"></strong> drivers. Hot days (78°F+) averaged a similar <strong id="sm-hot-avg"></strong> — warm weather in general is good for turnout.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px">Cold events are the real attendance killers on the temperature side. Events where the high didn’t crack 45°F averaged only <strong style="color:var(--bl)" id="sm-cold-avg"></strong> drivers — the lowest of any temperature bucket.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#9729; Clouds Don’t Scare Drivers</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">One of the more counterintuitive findings: <strong style="color:#f1f5f9">overcast-but-dry days are nearly as good as sunny ones.</strong> Sunny and clear events averaged <strong id="sm-clear-avg"></strong> drivers. Overcast dry days averaged <strong id="sm-ovc-avg"></strong>. This matters because Pittsburgh gets a lot of overcast days — and the data says they're not a problem.</p>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">The all-time highest-attended event — the <strong style="color:#f1f5f9" id="sm-best-event"></strong> — was on a dry day with a pleasant 65°F high. It's the cause, not the clouds, that matters most.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:12px">One of the more counterintuitive findings: <strong style="color:var(--tx2)">overcast-but-dry days are nearly as good as sunny ones.</strong> Sunny and clear events averaged <strong id="sm-clear-avg"></strong> drivers. Overcast dry days averaged <strong id="sm-ovc-avg"></strong>. This matters because Pittsburgh gets a lot of overcast days — and the data says they're not a problem.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px">The all-time highest-attended event — the <strong style="color:var(--tx2)" id="sm-best-event"></strong> — was on a dry day with a pleasant 65°F high. It's the cause, not the clouds, that matters most.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#128214; The Weather Events That Tell the Story</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:14px">Some events were named by the organizers themselves based on the weather — and the data backs them up:</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:14px">Some events were named by the organizers themselves based on the weather — and the data backs them up:</p>
           <div style="display:flex;flex-direction:column;gap:10px" id="sm-stories"></div>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#128168; Wind Is a Minor Factor</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px">Wind speed shows a mild negative correlation with attendance (<strong style="color:#f1f5f9" id="sm-wind-r"></strong>), but it’s the weakest of the three weather factors. Wind rarely appears to be the deciding factor on its own — it usually shows up alongside cold or rainy conditions that are already suppressing turnout.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px">Wind speed shows a mild negative correlation with attendance (<strong style="color:var(--tx2)" id="sm-wind-r"></strong>), but it’s the weakest of the three weather factors. Wind rarely appears to be the deciding factor on its own — it usually shows up alongside cold or rainy conditions that are already suppressing turnout.</p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#10084;&#65039; The HDSA Effect</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px" id="sm-hdsa"></p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px" id="sm-hdsa"></p>
         </div>
         <div class="card" style="margin-bottom:14px">
           <div class="ct">&#128200; The Biggest Swing</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px" id="sm-swing"></p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px" id="sm-swing"></p>
         </div>
         <div class="card">
           <div class="ct">&#128204; The Bottom Line</div>
-          <p style="line-height:1.8;color:#cbd5e1;font-size:13px;margin-bottom:12px">If you want to predict whether an NHSCC event will have strong turnout, check two things: <strong style="color:#f1f5f9">Is it going to rain? And will the high temp be above 55°F?</strong> Get both of those right and you’re almost guaranteed a solid crowd.</p>
+          <p style="line-height:1.8;color:var(--sub);font-size:13px;margin-bottom:12px">If you want to predict whether an NHSCC event will have strong turnout, check two things: <strong style="color:var(--tx2)">Is it going to rain? And will the high temp be above 55°F?</strong> Get both of those right and you’re almost guaranteed a solid crowd.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px">
+            <div style="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:14px">
               <div style="font-size:11px;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Best Case</div>
-              <div style="font-size:13px;color:#22c55e;line-height:1.8">✓ Dry (no rain)<br>✓ High temp 68–77°F<br>✓ Light wind<br>✓ HDSA / charity event</div>
-              <div style="font-size:20px;font-weight:700;color:#22c55e;font-family:system-ui,sans-serif;margin-top:8px" id="sm-best-case"></div>
+              <div style="font-size:13px;color:var(--gn);line-height:1.8">✓ Dry (no rain)<br>✓ High temp 68–77°F<br>✓ Light wind<br>✓ HDSA / charity event</div>
+              <div style="font-size:20px;font-weight:700;color:var(--gn);font-family:system-ui,sans-serif;margin-top:8px" id="sm-best-case"></div>
             </div>
-            <div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px">
+            <div style="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:14px">
               <div style="font-size:11px;color:var(--mu);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Worst Case</div>
-              <div style="font-size:13px;color:#ef4444;line-height:1.8">✗ Heavy rain (0.5"+)<br>✗ High temp below 50°F<br>✗ Strong wind<br>✗ Late October/November</div>
-              <div style="font-size:20px;font-weight:700;color:#ef4444;font-family:system-ui,sans-serif;margin-top:8px" id="sm-worst-case"></div>
+              <div style="font-size:13px;color:var(--rd);line-height:1.8">✗ Heavy rain (0.5"+)<br>✗ High temp below 50°F<br>✗ Strong wind<br>✗ Late October/November</div>
+              <div style="font-size:20px;font-weight:700;color:var(--rd);font-family:system-ui,sans-serif;margin-top:8px" id="sm-worst-case"></div>
             </div>
           </div>
         </div>
@@ -176,13 +197,27 @@ tr:hover td{background:#1e293b}
 </div>
 
 <script>
+function toggleTheme(){
+  const html=document.documentElement;
+  const cur=html.getAttribute('data-theme');
+  const next=cur==='light'?'dark':'light';
+  localStorage.setItem('nhscc-theme',next);
+  html.setAttribute('data-theme',next);
+  // Reload so charts render with correct theme colors
+  location.reload();
+}
+// Set initial icon
+document.getElementById('theme-btn').textContent=document.documentElement.getAttribute('data-theme')==='light'?'☀️':'🌙';
+
 const CCOL={"\u2600\ufe0f Sunny/Clear":"#f59e0b","\u2601\ufe0f Overcast (Dry)":"#94a3b8","\u2744\ufe0f Snow":"#bfdbfe","\uD83C\uDF26\ufe0f Drizzle/Trace":"#7dd3fc","\uD83C\uDF27\ufe0f Light Rain":"#3b82f6","\u26c8\ufe0f Heavy Rain":"#7c3aed"};
 const TCOL=["#93c5fd","#6ee7b7","#fde68a","#fb923c","#ef4444"];
-const TT={backgroundColor:"#1e293b",borderColor:"#334155",borderWidth:1,titleColor:"#f1f5f9",bodyColor:"#94a3b8",padding:10};
-const GR={color:"#1e293b"};const TK={color:"#64748b",font:{size:11}};
+function themeColors(){const s=getComputedStyle(document.documentElement);return{ttBg:s.getPropertyValue('--tt-bg').trim(),ttBd:s.getPropertyValue('--tt-bd').trim(),tx2:s.getPropertyValue('--tx2').trim(),sub2:s.getPropertyValue('--sub2').trim(),gr:s.getPropertyValue('--gr').trim(),mu:s.getPropertyValue('--mu').trim(),ac:s.getPropertyValue('--ac').trim()};}
+const TC=themeColors();
+const TT={backgroundColor:TC.ttBg,borderColor:TC.ttBd,borderWidth:1,titleColor:TC.tx2,bodyColor:TC.sub2,padding:10};
+const GR={color:TC.gr};const TK={color:TC.mu,font:{size:12}};
 const BASE={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TT},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK}}};
-function refY(v){return{id:"r",beforeDraw(c){const{ctx,chartArea:a,scales:s}=c;if(!a)return;const y=s.y.getPixelForValue(v);ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle="#f59e0b";ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(a.left,y);ctx.lineTo(a.right,y);ctx.stroke();ctx.restore();}};}
-function refX(v){return{id:"r",beforeDraw(c){const{ctx,chartArea:a,scales:s}=c;if(!a)return;const x=s.x.getPixelForValue(v);ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle="#f59e0b";ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,a.top);ctx.lineTo(x,a.bottom);ctx.stroke();ctx.restore();}};}
+function refY(v){return{id:"r",beforeDraw(c){const{ctx,chartArea:a,scales:s}=c;if(!a)return;const y=s.y.getPixelForValue(v);ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle=TC.ac;ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(a.left,y);ctx.lineTo(a.right,y);ctx.stroke();ctx.restore();}};}
+function refX(v){return{id:"r",beforeDraw(c){const{ctx,chartArea:a,scales:s}=c;if(!a)return;const x=s.x.getPixelForValue(v);ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle=TC.ac;ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x,a.top);ctx.lineTo(x,a.bottom);ctx.stroke();ctx.restore();}};}
 function av(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:0;}
 function pr(xs,ys){const mx=av(xs),my=av(ys);const n=xs.reduce((s,x,i)=>s+(x-mx)*(ys[i]-my),0);const d=Math.sqrt(xs.reduce((s,x)=>s+(x-mx)**2,0)*ys.reduce((s,y)=>s+(y-my)**2,0));return d?Math.round(n/d*1000)/1000:0;}
 function pill(c){const col=CCOL[c]||"#888";return '<span class="pill" style="background:'+col+'22;color:'+col+'">'+c+'</span>';}
@@ -223,13 +258,13 @@ fetch("data/nhscc_events_weather.json")
     const wetHalf=wetPct>50?"That\u2019s more than half.":wetPct===50?"That\u2019s exactly half.":"That\u2019s just under half.";
 
     const gap=Math.round(DRY_AVG-WET_AVG);
-    document.getElementById("sm-rain-summary").innerHTML="<strong style='color:#f1f5f9'>"+wetPct+"% of NHSCC events \u2014 "+wet.length+" out of "+N+" \u2014 had measurable rainfall during the event. "+wetHalf+"</strong> And drivers notice: events with any rain averaged <strong style='color:#3b82f6'>"+WET_AVG+"</strong> drivers, while completely dry events averaged <strong style='color:#22c55e'>"+DRY_AVG+"</strong> drivers \u2014 a gap of <strong style='color:#f1f5f9'>"+gap+"</strong> people per event.";
+    document.getElementById("sm-rain-summary").innerHTML="<strong style='color:var(--tx2)'>"+wetPct+"% of NHSCC events \u2014 "+wet.length+" out of "+N+" \u2014 had measurable rainfall during the event. "+wetHalf+"</strong> And drivers notice: events with any rain averaged <strong style='color:var(--bl)'>"+WET_AVG+"</strong> drivers, while completely dry events averaged <strong style='color:var(--gn)'>"+DRY_AVG+"</strong> drivers \u2014 a gap of <strong style='color:var(--tx2)'>"+gap+"</strong> people per event.";
 
     const mod=EVENTS.filter(e=>e.precip>=0.1&&e.precip<0.5);
     const modAvg=av(mod.map(e=>e.drivers));
     const lt=EVENTS.filter(e=>e.precip>0&&e.precip<0.1);
     const ltAvg=av(lt.map(e=>e.drivers));
-    document.getElementById("sm-rain-detail").innerHTML="The data breaks down into three tiers. <strong style='color:#ef4444'>Heavy rain</strong> (0.5\u201d+ during the event) averaged just <strong style='color:#ef4444'>"+HEAVY_AVG+"</strong> drivers across "+heavy.length+" events \u2014 a brutal drop. <strong style='color:#3b82f6'>Moderate rain</strong> (0.1\u20130.5\u201d) averaged <strong style='color:#3b82f6'>"+modAvg+"</strong> across "+mod.length+" events. <strong style='color:#7dd3fc'>Light drizzle</strong> (under 0.1\u201d) averaged <strong style='color:#7dd3fc'>"+ltAvg+"</strong> across "+lt.length+" events \u2014 noticeable but not devastating.";
+    document.getElementById("sm-rain-detail").innerHTML="The data breaks down into three tiers. <strong style='color:var(--rd)'>Heavy rain</strong> (0.5\u201d+ during the event) averaged just <strong style='color:var(--rd)'>"+HEAVY_AVG+"</strong> drivers across "+heavy.length+" events \u2014 a brutal drop. <strong style='color:var(--bl)'>Moderate rain</strong> (0.1\u20130.5\u201d) averaged <strong style='color:var(--bl)'>"+modAvg+"</strong> across "+mod.length+" events. <strong style='color:#7dd3fc'>Light drizzle</strong> (under 0.1\u201d) averaged <strong style='color:#7dd3fc'>"+ltAvg+"</strong> across "+lt.length+" events \u2014 noticeable but not devastating.";
 
     document.getElementById("sm-precip-r").textContent=PRECIP_R;
     document.getElementById("sm-temp-r").textContent="+"+TEMP_R;
@@ -251,7 +286,7 @@ fetch("data/nhscc_events_weather.json")
     const hdsa=EVENTS.filter(e=>e.name.toUpperCase().includes("HDSA"));
     if(hdsa.length>0){
       const hdsaAvg=av(hdsa.map(e=>e.drivers));
-      document.getElementById("sm-hdsa").innerHTML="HDSA charity events are in a league of their own. Across <strong style='color:#f1f5f9'>"+hdsa.length+" HDSA events</strong>, attendance averaged <strong style='color:#22c55e'>"+hdsaAvg+" drivers</strong> \u2014 nearly "+Math.round((hdsaAvg/OA-1)*100)+"% above the overall average. The cause clearly draws people who might otherwise stay home. Four of the five highest-attended events in NHSCC history were HDSA benefits.";
+      document.getElementById("sm-hdsa").innerHTML="HDSA charity events are in a league of their own. Across <strong style='color:var(--tx2)'>"+hdsa.length+" HDSA events</strong>, attendance averaged <strong style='color:var(--gn)'>"+hdsaAvg+" drivers</strong> \u2014 nearly "+Math.round((hdsaAvg/OA-1)*100)+"% above the overall average. The cause clearly draws people who might otherwise stay home. Four of the five highest-attended events in NHSCC history were HDSA benefits.";
     }
 
     // Biggest swing between consecutive events
@@ -264,7 +299,7 @@ fetch("data/nhscc_events_weather.json")
     if(swA&&swB){
       const hi=swA.drivers>swB.drivers?swA:swB;
       const lo=swA.drivers>swB.drivers?swB:swA;
-      document.getElementById("sm-swing").innerHTML="The biggest attendance swing between consecutive events was <strong style='color:#f1f5f9'>"+maxSwing+" drivers</strong>. "+hi.name+" ("+hi.year+") drew <strong style='color:#22c55e'>"+hi.drivers+"</strong> on a "+Math.round(hi.tmax)+"\u00b0F day with "+hi.precip.toFixed(2)+"\u201d of rain. The very next event, "+lo.name+", drew just <strong style='color:#ef4444'>"+lo.drivers+"</strong> with "+lo.precip.toFixed(2)+"\u201d of rain at "+Math.round(lo.tmax)+"\u00b0F. Weather makes the difference.";
+      document.getElementById("sm-swing").innerHTML="The biggest attendance swing between consecutive events was <strong style='color:var(--tx2)'>"+maxSwing+" drivers</strong>. "+hi.name+" ("+hi.year+") drew <strong style='color:var(--gn)'>"+hi.drivers+"</strong> on a "+Math.round(hi.tmax)+"\u00b0F day with "+hi.precip.toFixed(2)+"\u201d of rain. The very next event, "+lo.name+", drew just <strong style='color:var(--rd)'>"+lo.drivers+"</strong> with "+lo.precip.toFixed(2)+"\u201d of rain at "+Math.round(lo.tmax)+"\u00b0F. Weather makes the difference.";
     }
 
     // Best/worst case numbers
@@ -282,7 +317,7 @@ fetch("data/nhscc_events_weather.json")
       {border:"#93c5fd",icon:"\uD83E\uDD76",title:"First Annual Frost Across \u2014 October 29, 2017 \u2014 35 drivers",body:"High of 43\u00b0F and 0.12 inches of rain during the event. Cold AND wet \u2014 the worst combination in the data. 35 drivers is 4th lowest all-time. The Frost Across brand was born out of this event\u2019s misery."},
     ];
     const sc=document.getElementById("sm-stories");
-    stories.forEach(s=>{const d=document.createElement("div");d.style.cssText="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:12px 16px;border-left:3px solid "+s.border;d.innerHTML='<div style="font-size:12px;font-weight:600;color:#f1f5f9;margin-bottom:3px">'+s.icon+" "+s.title+'</div><div style="font-size:11px;color:#94a3b8;line-height:1.7">'+s.body+'</div>';sc.appendChild(d);});
+    stories.forEach(s=>{const d=document.createElement("div");d.style.cssText="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:12px 16px;border-left:3px solid "+s.border;d.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:3px">'+s.icon+" "+s.title+'</div><div style="font-size:11px;color:var(--sub2);line-height:1.7">'+s.body+'</div>';sc.appendChild(d);});
 
     // Header
     document.getElementById("hdr-sub").textContent="North Park, Gibsonia PA \u00b7 ERA5 reanalysis via Open-Meteo \u00b7 "+N+" events \u00b7 2006\u20132026";
@@ -311,26 +346,26 @@ fetch("data/nhscc_events_weather.json")
     new Chart(document.getElementById("c3"),{type:"bar",data:{labels:BY_TEMP.map(d=>d.label),datasets:[{data:BY_TEMP.map(d=>d.avg),backgroundColor:TCOL,borderRadius:4}]},options:{...BASE,indexAxis:"y",plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.x+" drivers ("+BY_TEMP[c.dataIndex].count+" events)"}}}},plugins:[refX(OA)]});
 
     const ti=document.getElementById("ti");
-    BY_TEMP.forEach((d,i)=>{const diff=Math.round(d.avg-OA);const el=document.createElement("div");el.className="is";el.innerHTML='<div class="isl">'+d.label+'</div><div class="isv" style="color:'+TCOL[i]+'">'+d.avg+'</div><div class="iss">'+d.count+' events \u00b7 <span style="color:'+(diff>=0?"#22c55e":"#ef4444")+'">'+(diff>=0?"+":"")+diff+' vs avg</span></div>';ti.appendChild(el);});
+    BY_TEMP.forEach((d,i)=>{const diff=Math.round(d.avg-OA);const el=document.createElement("div");el.className="is";el.innerHTML='<div class="isl">'+d.label+'</div><div class="isv" style="color:'+TCOL[i]+'">'+d.avg+'</div><div class="iss">'+d.count+' events \u00b7 <span style="color:'+(diff>=0?"var(--gn)":"var(--rd)")+'">'+(diff>=0?"+":"")+diff+' vs avg</span></div>';ti.appendChild(el);});
 
     const CCOLA=EVENTS.map(e=>CCOL[e.condition]||"#888");
     const SD=EVENTS.map(e=>({x:Math.round(e.tmax),y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers @ "+Math.round(e.tmax)+"\u00b0F high"}));
-    new Chart(document.getElementById("c5"),{type:"scatter",data:{datasets:[{data:SD,pointBackgroundColor:CCOLA,pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Daily High Temp (\u00b0F)",color:"#64748b",font:{size:11}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:"#64748b",font:{size:11}}}}}});
+    new Chart(document.getElementById("c5"),{type:"scatter",data:{datasets:[{data:SD,pointBackgroundColor:CCOLA,pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Daily High Temp (\u00b0F)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
     const SP=EVENTS.map(e=>({x:Math.round(e.precip*100)/100,y:e.drivers,cond:e.condition,lbl:e.year+" "+e.name+": "+e.drivers+" drivers, "+e.precip.toFixed(2)+"in"}));
-    new Chart(document.getElementById("c6"),{type:"scatter",data:{datasets:[{data:SP,pointBackgroundColor:EVENTS.map(e=>CCOL[e.condition]||"#888"),pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Precipitation (inches)",color:"#64748b",font:{size:11}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:"#64748b",font:{size:11}}}}}});
+    new Chart(document.getElementById("c6"),{type:"scatter",data:{datasets:[{data:SP,pointBackgroundColor:EVENTS.map(e=>CCOL[e.condition]||"#888"),pointRadius:5,pointHoverRadius:7}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.raw.lbl}}},scales:{x:{...BASE.scales.x,title:{display:true,text:"Precipitation (inches)",color:TC.mu,font:{size:12}}},y:{...BASE.scales.y,title:{display:true,text:"Drivers",color:TC.mu,font:{size:12}}}}}});
 
-    function hdr(){return "<tr><th>Year</th><th>Event</th><th>Drivers</th><th>Hi\u00b0F</th><th>Precip</th><th>Condition</th></tr>";}
-    function row(e,nc){return "<tr><td style='color:var(--mu)'>"+e.year+"</td><td style='max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' title='"+e.name+"'>"+e.name+"</td><td style='color:"+nc+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td style='color:#94a3b8'>"+Math.round(e.tmax)+"\u00b0</td><td style='color:"+(e.precip>0?"var(--bl)":"var(--mu)")+"'>"+e.precip.toFixed(2)+"in</td><td>"+pill(e.condition)+"</td></tr>";}
-    document.getElementById("tw").innerHTML=hdr()+WORST.map(e=>row(e,"#ef4444")).join("");
-    document.getElementById("tb").innerHTML=hdr()+BEST.map(e=>row(e,"#22c55e")).join("");
+    function hdr(){return "<tr><th>Year</th><th>Event</th><th class='num'>Drivers</th><th class='num'>Hi\u00b0F</th><th class='num'>Precip</th><th>Condition</th></tr>";}
+    function row(e,nc){return "<tr><td style='color:var(--mu)'>"+e.year+"</td><td style='max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap' title='"+e.name+"'>"+e.name+"</td><td class='num' style='color:"+nc+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td class='num' style='color:var(--sub2)'>"+Math.round(e.tmax)+"\u00b0</td><td class='num' style='color:"+(e.precip>0?"var(--bl)":"var(--mu)")+"'>"+e.precip.toFixed(2)+"\"</td><td>"+pill(e.condition)+"</td></tr>";}
+    document.getElementById("tw").innerHTML=hdr()+WORST.map(e=>row(e,"var(--rd)")).join("");
+    document.getElementById("tb").innerHTML=hdr()+BEST.map(e=>row(e,"var(--gn)")).join("");
 
     const ta=document.getElementById("ta");
-    const allH="<tr><th>Date</th><th>Year</th><th>Event</th><th>Drivers</th><th>Hi\u00b0F</th><th>Lo\u00b0F</th><th>Precip</th><th>Wind</th><th>Condition</th></tr>";
+    const allH="<tr><th>Date</th><th class='hide-mobile'>Year</th><th>Event</th><th class='num'>Drivers</th><th class='num'>Hi\u00b0F</th><th class='num hide-mobile'>Lo\u00b0F</th><th class='num'>Precip</th><th class='num hide-mobile'>Wind</th><th>Condition</th></tr>";
     const dMin=Math.min(...drivers),dMax=Math.max(...drivers),dRange=dMax-dMin||1;
     const maxPrecip=Math.max(...EVENTS.map(e=>e.precip),0.01);
     function drvCol(d){const t=(d-dMin)/dRange;const r=Math.round(239-(239-34)*t);const g=Math.round(68+(197-68)*t);const b=Math.round(68+(79-68)*t);return "rgb("+r+","+g+","+b+")";}
     function precBg(p){if(p===0)return"";const a=Math.min(p/maxPrecip,1)*0.35+0.05;return "background:rgba(59,130,246,"+a.toFixed(2)+")";}
-    const allR=[...EVENTS].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>"<tr><td style='color:var(--mu)'>"+e.date+"</td><td style='color:var(--mu)'>"+e.year+"</td><td>"+e.name+"</td><td style='color:"+drvCol(e.drivers)+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td>"+Math.round(e.tmax)+"\u00b0</td><td>"+Math.round(e.tmin)+"\u00b0</td><td style='color:"+(e.precip>0?"#93c5fd":"var(--mu)")+";"+precBg(e.precip)+"'>"+e.precip.toFixed(2)+"in</td><td>"+Math.round(e.wind)+"mph</td><td>"+pill(e.condition)+"</td></tr>").join("");
+    const allR=[...EVENTS].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>"<tr><td style='color:var(--mu)'>"+e.date+"</td><td class='hide-mobile' style='color:var(--mu)'>"+e.year+"</td><td>"+e.name+"</td><td class='num' style='color:"+drvCol(e.drivers)+";font-weight:700;font-family:system-ui,sans-serif'>"+e.drivers+"</td><td class='num'>"+Math.round(e.tmax)+"\u00b0</td><td class='num hide-mobile'>"+Math.round(e.tmin)+"\u00b0</td><td class='num' style='color:"+(e.precip>0?"#93c5fd":"var(--mu)")+";"+precBg(e.precip)+"'>"+e.precip.toFixed(2)+"\"</td><td class='num hide-mobile'>"+Math.round(e.wind)+"mph</td><td>"+pill(e.condition)+"</td></tr>").join("");
     ta.innerHTML=allH+allR;
 
     // === Seasons tab ===
@@ -353,48 +388,49 @@ fetch("data/nhscc_events_weather.json")
     const peakYear=years[yrAvgs.indexOf(Math.max(...yrAvgs))];
     const peakAvg=Math.max(...yrAvgs);
 
-    const trendCol=diffAvg>=0?"#22c55e":"#ef4444";
+    const trendCol=diffAvg>=0?"var(--gn)":"var(--rd)";
     const trendArrow=diffAvg>=0?"\u25B2":"\u25BC";
     const seasonCard=document.getElementById("yr-season");
     seasonCard.innerHTML='<div class="ct">\uD83D\uDCC5 '+curYear+' Season So Far</div>'+
-      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">'+
-        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+      '<div class="yr-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">'+
+        '<div style="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
           '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">AVG ATTENDANCE</div>'+
           '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:'+trendCol+'">'+curAvg+'</div>'+
           '<div style="font-size:11px;color:'+trendCol+';margin-top:2px">'+trendArrow+' '+(diffAvg>=0?"+":"")+diffAvg+' vs historical ('+pastAvgOfAvgs+')</div>'+
         '</div>'+
-        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+        '<div style="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
           '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">EVENTS / TOTAL DRIVERS</div>'+
           '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:var(--ac)">'+curCount+'</div>'+
           '<div style="font-size:11px;color:var(--mu);margin-top:2px">'+curTotal+' total drivers</div>'+
         '</div>'+
-        '<div style="background:#0a0e1a;border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
+        '<div style="background:var(--inset);border:1px solid var(--bd);border-radius:8px;padding:14px;text-align:center">'+
           '<div style="font-size:11px;color:var(--mu);margin-bottom:4px">VS HISTORICAL AVG</div>'+
           '<div style="font-size:28px;font-weight:700;font-family:system-ui,sans-serif;color:'+trendCol+'">'+(pctDiff>=0?"+":"")+pctDiff+'%</div>'+
           '<div style="font-size:11px;color:var(--mu);margin-top:2px">Peak: '+peakYear+' ('+peakAvg+' avg)</div>'+
         '</div>'+
       '</div>'+
-      '<div style="font-size:12px;color:#94a3b8;line-height:1.7">'+
-        curYear+' is averaging <strong style="color:#f1f5f9">'+curAvg+' drivers</strong> per event across '+curCount+' event'+(curCount!==1?'s':'')+'. '+
+      '<div style="font-size:12px;color:var(--sub2);line-height:1.7">'+
+        curYear+' is averaging <strong style="color:var(--tx2)">'+curAvg+' drivers</strong> per event across '+curCount+' event'+(curCount!==1?'s':'')+'. '+
         (pctDiff>=10?'The club is trending well above historical norms — if this pace holds, '+curYear+' could be one of the strongest seasons on record.':
          pctDiff>=0?'Attendance is tracking slightly above the historical average of '+pastAvgOfAvgs+' drivers per event.':
          'Attendance is running below the historical average of '+pastAvgOfAvgs+' drivers per event.')+
       '</div>';
 
     // Avg attendance by season chart
-    const yrBarCols=years.map(y=>y===curYear?'#f59e0b':'#3b82f6');
+    const yrBarCols=years.map(y=>y===curYear?TC.ac:'#3b82f6');
     new Chart(document.getElementById("c-yr-avg"),{type:"bar",data:{labels:years,datasets:[{data:yrAvgs,backgroundColor:yrBarCols,borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" avg drivers ("+yrCounts[c.dataIndex]+" events)"}}},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK,beginAtZero:true}}},plugins:[refY(OA)]});
     document.getElementById("n-yr-avg").textContent="Dashed = overall avg ("+OA+") \u00b7 "+curYear+" highlighted in gold \u00b7 "+years.length+" seasons";
 
     // Total drivers by season chart
-    new Chart(document.getElementById("c-yr-total"),{type:"bar",data:{labels:years,datasets:[{data:yrTotals,backgroundColor:years.map(y=>y===curYear?'#f59e0b':'#22c55e'),borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" total drivers ("+yrCounts[c.dataIndex]+" events, avg "+yrAvgs[c.dataIndex]+")"}}},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK,beginAtZero:true}}}});
+    new Chart(document.getElementById("c-yr-total"),{type:"bar",data:{labels:years,datasets:[{data:yrTotals,backgroundColor:years.map(y=>y===curYear?TC.ac:'#22c55e'),borderRadius:4}]},options:{...BASE,plugins:{...BASE.plugins,tooltip:{...TT,callbacks:{label:c=>c.parsed.y+" total drivers ("+yrCounts[c.dataIndex]+" events, avg "+yrAvgs[c.dataIndex]+")"}}},scales:{x:{grid:GR,ticks:TK},y:{grid:GR,ticks:TK,beginAtZero:true}}}});
     document.getElementById("n-yr-total").textContent=curYear+" highlighted in gold \u00b7 total = sum of all drivers that season";
 
     document.getElementById("srch").addEventListener("input",function(){const q=this.value.toLowerCase();ta.querySelectorAll("tr:not(:first-child)").forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?"":"none";});});
   })
   .catch(err=>{
-    document.getElementById("loading").innerHTML='<div style="color:#ef4444;font-size:13px">\u26a0 Could not load data/nhscc_events_weather.json<br><span style="color:var(--mu);font-size:11px;margin-top:6px;display:block">'+err.message+'</span></div>';
+    document.getElementById("loading").innerHTML='<div style="color:var(--rd);font-size:13px">\u26a0 Could not load data/nhscc_events_weather.json<br><span style="color:var(--mu);font-size:11px;margin-top:6px;display:block">'+err.message+'</span></div>';
   });
 </script>
+<div class="footer">ERA5 reanalysis data via <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> · Dashboard built with <a href="https://www.chartjs.org" target="_blank">Chart.js</a> · North Park, Gibsonia PA</div>
 </body>
 </html>
