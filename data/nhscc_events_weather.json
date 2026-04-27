@@ -7,7 +7,7 @@
       "lon": -79.993918
     },
     "weather_source": "ERA5 reanalysis via Open-Meteo archive API",
-    "event_count": 181,
+    "event_count": 182,
     "season_range": "2006-2026",
     "fields": {
       "date": "ISO 8601 event date",
@@ -2375,6 +2375,19 @@
       "wind": 10.3,
       "code": 3,
       "tmid": 57.6,
+      "condition": "☁️ Overcast (Dry)"
+    },
+    {
+      "date": "2026-04-26",
+      "drivers": 119,
+      "year": 2026,
+      "name": "Stay Calm and Dave On - Points 3",
+      "tmax": 58.6,
+      "tmin": 44.6,
+      "precip": 0,
+      "wind": 10.9,
+      "code": 3,
+      "tmid": 51.6,
       "condition": "☁️ Overcast (Dry)"
     }
   ]
