@@ -7,7 +7,7 @@
       "lon": -79.993918
     },
     "weather_source": "ERA5 reanalysis via Open-Meteo archive API",
-    "event_count": 182,
+    "event_count": 183,
     "season_range": "2006-2026",
     "fields": {
       "date": "ISO 8601 event date",
@@ -2388,6 +2388,19 @@
       "wind": 10.9,
       "code": 3,
       "tmid": 51.6,
+      "condition": "☁️ Overcast (Dry)"
+    },
+    {
+      "date": "2026-05-03",
+      "drivers": 118,
+      "year": 2026,
+      "name": "Points Event 4",
+      "tmax": 56.3,
+      "tmin": 32.5,
+      "precip": 0,
+      "wind": 12.4,
+      "code": 3,
+      "tmid": 44.4,
       "condition": "☁️ Overcast (Dry)"
     }
   ]
